@@ -1,0 +1,55 @@
+#wrap {
+    width:  320px;
+    margin: 10% auto 0 auto;
+}
+
+/* top */
+h1#logo {
+    background-image: url("../images/logo.png");
+    height: 109px;
+    width: 293px;
+}
+
+#twitter,
+#linkedin,
+#github,
+#contact {
+    display: block;
+    margin-bottom: 30px;
+}
+
+#twitter {
+    background-image: url("../images/twitter.png");
+    width:  140px;
+    height: 24px;
+}
+
+#linkedin {
+    background-image: url("../images/linkedin.png");
+    width:  137px;
+    height: 39px;
+    margin-bottom: 25px;
+}
+
+#contact {
+    background-image: url("../images/contact.png");
+    width:  137px;
+    height: 28px;
+}
+
+#github {
+    background: #fff url("../images/github.png") no-repeat 0 0;
+    width:  151px;
+    height: 47px;
+    margin-bottom: 23px;
+}
+
+.hide {
+    display: none;
+}
+
+ul {
+    margin:     50px 0 0 0;
+    padding:    0;
+    list-style-type:    none;
+}
