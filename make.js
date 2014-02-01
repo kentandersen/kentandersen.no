@@ -1,53 +1,40 @@
+#!/usr/bin/env node
+
+// based on https://github.com/kjbekkelund/js-build
+
 require('shelljs/make');
 require('colors');
 
-var _ = require('underscore'),
-    fs = require('fs'),
-    glob = require('glob'),
-    path = require('path'),
-    zlib = require('zlib'),
-    hogan = require('hogan.js'),
-    moment = require('moment');
+var fs = require('fs');
+var glob = require('glob');
+var path = require('path');
+var uglifycss = require('uglifycss');
+var imageinliner = require('imageinliner');
+var zlib = require('zlib');
+var hogan = require('hogan.js');
+var npmBin = require('npm-bin');
 
 var isWin = (process.platform === 'win32');
 
 /*** CONFIG ********/
 
-var version = process.env.VERSION || moment().format('YYYYMMDD');
-    targetDir = process.env.OUTPUT_DIR || path.join('build');
+var outputDir = process.env.OUTPUT_DIR || path.join('build');
+var webapp = path.join('src');
 
-var webapp = path.join('src'),
-
-    indexFile = path.join(webapp, 'index.mustache'),
-    mainCssFile = path.join(webapp, 'css', 'style.css');
-
+var outputHtmlFile = path.join(outputDir, 'index.html');
 
 /*** TARGETS ********/
 
 target.all = function() {
-    target.check();
-    target.jshint();
-    target.test();
     target.build();
 };
 
-target.jshint = function() {
-    var files = glob.sync(path.join(webapp, 'js', '**', '*.js'));
-
-    section('Running JSHint');
-    bin('jshint', '--config ' + jshintConfig, files.join(' '));
-};
-
-target.test = function() {
-    section('Running JavaScript tests');
-    bin('karma', 'start', 'karma.conf.js', '--browsers PhantomJS', '--single-run');
-};
-
 target.build = function() {
-    createCleanDir(targetDir);
-
+    createCleanDir(outputDir);
 
     target.buildImg();
+    target.buildHtml();
+    target.compress();
 
     echo();echo();
     success("Build succeeded!");
@@ -61,27 +48,26 @@ target.buildImg = function() {
 
     section('Optimizing pngs');
 
-    var to = path.join(targetDir, 'images');
+    var to = path.join(outputDir, 'images');
 
-    bin('optipng-bin', '-strip all', '-dir ' + to, pngs.join(' '))
+    var res = npmBin('optipng-bin', ['-strip all', '-o7', '-dir ' + to, pngs.join(' ')], {silent: true});
+
+    done(res);
 };
 
 target.buildHtml = function() {
-    var htmlFile = path.join(targetDir, 'index.mustache');
+    var htmlFile = path.join(webapp, 'index.mustache');
+
 
     section('Building HTML → ' + htmlFile);
-    renderAndWriteMustache(indexFile, htmlFile, {
-        cssFile: cssFileName,
-        jsFile: jsFileName
+    renderAndWriteMustache(htmlFile, outputHtmlFile, {
+        css: minifyCss()
     });
 };
 
-
-target.buildCss = function() {
-    section('Building Less → ' + cssFile);
-    bin('lessc', [mainLessFile, cssFile]);
+target.compress = function() {
+    gzip(outputHtmlFile);
 };
-
 
 var renderAndWriteMustache = function(from, to, data) {
     var mustache = fs.readFileSync(from).toString();
@@ -94,11 +80,29 @@ var renderAndWriteMustache = function(from, to, data) {
 };
 
 
-/*** HELPER FUNCTIONS ********/
+var minifyCss = function() {
+    var mainCssFile = path.join(webapp, 'css', 'style.css');
 
-var bin = function() {
+    var uglified = uglifycss.processFiles([mainCssFile]);
 
+    return imageinliner.css(uglified, {
+        cssBasePath:        outputDir,
+        compressOutput:     true
+    });
 };
+
+var gzip = function(file) {
+    var gzip = zlib.createGzip();
+    var input = fs.createReadStream(file);
+    var output = fs.createWriteStream(file + '.gz');
+
+    section('Gzipping ' + file);
+    input.pipe(gzip).pipe(output);
+    success();
+};
+
+
+/*** HELPER FUNCTIONS ********/
 
 var createCleanDir = function(dir) {
     if (test('-d', dir)) {
