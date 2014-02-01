@@ -5,7 +5,7 @@ var port = Number(process.env.PORT || 5000);
 
 var static = require('node-static');
 
-var fileServer = new static.Server('./build');
+var fileServer = new static.Server('./build', { gzip: true });
 
 require('http').createServer(function (request, response) {
     request.addListener('end', function () {
