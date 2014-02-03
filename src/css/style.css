@@ -5,8 +5,8 @@
 
 /* top */
 h1#logo {
-    background-image: url("images/logo.png");
-    height: 109px;
+    background-image: url("images/logo.svg");
+    height: 92px;
     width: 293px;
 }
 
@@ -19,29 +19,29 @@ h1#logo {
 }
 
 #twitter {
-    background-image: url("images/twitter.png");
+    background-image: url("images/twitter.svg");
     width:  140px;
-    height: 24px;
+    height: 26px;
 }
 
 #linkedin {
-    background-image: url("images/linkedin.png");
+    background-image: url("images/linkedin.svg");
     width:  137px;
-    height: 39px;
+    height: 37px;
     margin-bottom: 25px;
 }
 
 #contact {
-    background-image: url("images/contact.png");
+    background-image: url("images/contact.svg");
     width:  137px;
-    height: 28px;
+    height: 26px;
 }
 
 #github {
-    background: #fff url("images/github.png") no-repeat 0 0;
+    background: #fff url("images/github.svg");
     width:  151px;
     height: 47px;
-    margin-bottom: 23px;
+    margin-bottom: 21px;
 }
 
 .hide {

@@ -44,13 +44,22 @@ target.build = function() {
 /*** APP FUNCTIONS ********/
 
 target.buildImg = function() {
-    var pngs = glob.sync(path.join(webapp, 'images', '*.png'));
+
+    var srcImageFolder = path.join(webapp, 'images');
+    var outputImageFolder = path.join(outputDir, 'images');
+
+    cp('-R', srcImageFolder, outputDir);
+
+    var pngs = glob.sync(path.join(outputImageFolder, '*.png'));
 
     section('Optimizing pngs');
 
-    var to = path.join(outputDir, 'images');
+    var res = npmBin('optipng-bin', ['-strip all', '-o7', pngs.join(' ')], {silent: true});
+    done(res);
 
-    var res = npmBin('optipng-bin', ['-strip all', '-o7', '-dir ' + to, pngs.join(' ')], {silent: true});
+    section('Optimizing svgs');
+
+    res = npmBin('svgo', ['-f ' + outputImageFolder], {silent: true});
 
     done(res);
 };
