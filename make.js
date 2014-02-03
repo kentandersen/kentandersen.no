@@ -52,11 +52,6 @@ target.buildImg = function() {
 
     var pngs = glob.sync(path.join(outputImageFolder, '*.png'));
 
-    section('Optimizing pngs');
-
-    var res = npmBin('optipng-bin', ['-strip all', '-o7', pngs.join(' ')], {silent: true});
-    done(res);
-
     section('Optimizing svgs');
 
     res = npmBin('svgo', ['-f ' + outputImageFolder], {silent: true});
