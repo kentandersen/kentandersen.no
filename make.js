@@ -8,6 +8,7 @@ require('colors');
 var fs = require('fs');
 var glob = require('glob');
 var path = require('path');
+var UglifyJS = require("uglify-js");
 var uglifycss = require('uglifycss');
 var imageinliner = require('imageinliner');
 var zlib = require('zlib');
@@ -65,7 +66,8 @@ target.buildHtml = function() {
 
     section('Building HTML → ' + htmlFile);
     renderAndWriteMustache(htmlFile, outputHtmlFile, {
-        css: minifyCss()
+        css: minifyCss(),
+        js: minifyJs()
     });
 };
 
@@ -93,6 +95,12 @@ var minifyCss = function() {
         cssBasePath:        outputDir,
         compressOutput:     true
     });
+};
+
+var minifyJs = function() {
+    var mainJsFile = path.join(webapp, 'js', 'main.js');
+
+    return UglifyJS.minify(mainJsFile).code;
 };
 
 var gzip = function(file) {
