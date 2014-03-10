@@ -8,6 +8,7 @@ h1#logo {
     background-image: url("images/logo.svg");
     height: 93px;
     width: 293px;
+    color: transparent;
 }
 
 #twitter,
@@ -17,6 +18,7 @@ h1#logo {
     background-repeat: no-repeat;
     display: block;
     margin-bottom: 30px;
+    color: transparent;
 }
 
 #twitter {
